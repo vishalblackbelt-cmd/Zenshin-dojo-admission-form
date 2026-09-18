@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
+<title>Admission Form - The Shotokan Karate Academy</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Serif+JP:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+<script>
+tailwind.config={theme:{extend:{colors:{dojo:{black:'#ffffff',dark:'#f8f9fa',card:'#ffffff',border:'#e5e7eb',red:'#C41E3A',redDark:'#8B0000',redLight:'#E8334A',gold:'#D4A843',goldLight:'#F0D68A',gray:'#6b7280',lightGray:'#4b5563',white:'#111827'}},fontFamily:{sans:['Inter','sans-serif'],serif:['Noto Serif JP','serif']}}}}
+</script>
+<style>
+/* LIGHT MODE STYLES */
+*{box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#f9fafb;color:#111827;}
+.bg-pattern{background-image:radial-gradient(circle at 20% 50%,rgba(196,30,58,.04) 0%,transparent 50%),radial-gradient(circle at 80% 20%,rgba(212,168,67,.03) 0%,transparent 50%),radial-gradient(circle at 50% 80%,rgba(196,30,58,.02) 0%,transparent 50%)}
+.kanji-watermark{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Noto Serif JP',serif;font-size:18rem;color:rgba(0,0,0,.03);pointer-events:none;z-index:0;line-height:1}
+
+/* Form Inputs */
+input[type="text"],input[type="email"],input[type="tel"],input[type="date"],input[type="number"],select,textarea{background:#ffffff;border:1px solid #d1d5db;color:#111827;transition:all .3s;font-size:.9rem;width:100%;padding:.65rem .9rem;border-radius:8px;box-shadow:0 1px 2px rgba(0,0,0,0.05);}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#C41E3A;box-shadow:0 0 0 3px rgba(196,30,58,.15)}
+input::placeholder,textarea::placeholder{color:#9ca3af}
+.form-label{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#6b7280;margin-bottom:.35rem;display:block}
+
+/* Radio & Checkboxes */
+.radio-custom input[type="radio"]{display:none}
+.radio-custom label{display:inline-flex;align-items:center;gap:.5rem;cursor:pointer;padding:.5rem 1.2rem;border:1px solid #d1d5db;border-radius:8px;background:#ffffff;color:#4b5563;font-size:.85rem;font-weight:500;transition:all .25s;user-select:none;box-shadow:0 1px 2px rgba(0,0,0,0.02);}
+.radio-custom input[type="radio"]:checked+label{border-color:#C41E3A;background:rgba(196,30,58,.05);color:#C41E3A}
+.radio-custom label:hover{border-color:#9ca3af;color:#111827}
+.checkbox-wrap{display:flex;align-items:flex-start;gap:.75rem;cursor:pointer;user-select:none}
+.checkbox-wrap input[type="checkbox"]{display:none}
+.checkbox-box{flex-shrink:0;width:20px;height:20px;border:1.5px solid #d1d5db;border-radius:5px;background:#ffffff;display:flex;align-items:center;justify-content:center;transition:all .25s;margin-top:2px}
+.checkbox-wrap input:checked+.checkbox-box{background:#C41E3A;border-color:#C41E3A}
+.checkbox-wrap input:checked+.checkbox-box .check-icon{opacity:1}
+.check-icon{opacity:0;transition:opacity .2s;color:#fff;font-size:14px}
+
+/* Buttons */
+.submit-btn{background:linear-gradient(135deg,#C41E3A,#8B0000);color:#fff;font-weight:700;font-size:1rem;padding:1rem 3rem;border-radius:10px;border:none;cursor:pointer;transition:all .3s;text-transform:uppercase;letter-spacing:.1em;box-shadow:0 4px 6px rgba(196,30,58,.2);}
+.submit-btn:hover{transform:translateY(-2px);box-shadow:0 8px 15px rgba(196,30,58,.3)}
+.submit-btn:active{transform:translateY(0)}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+
+/* Toast & Layout */
+.toast{position:fixed;top:2rem;right:2rem;padding:1rem 1.5rem;border-radius:10px;color:#fff;font-weight:500;font-size:.9rem;z-index:9999;transform:translateX(120%);transition:transform .4s cubic-bezier(.16,1,.3,1);display:flex;align-items:center;gap:.75rem;max-width:400px}
+.toast.show{transform:translateX(0)}
+.toast-success{background:linear-gradient(135deg,#166534,#14532d);border:1px solid #22c55e33;box-shadow:0 10px 25px rgba(22,101,52,0.2)}
+.toast-error{background:linear-gradient(135deg,#7f1d1d,#991b1b);border:1px solid #ef444433;box-shadow:0 10px 25px rgba(127,29,29,0.2)}
+
+/* Upload Zones */
+.file-upload-zone{border:2px dashed #d1d5db;border-radius:10px;padding:1.5rem;text-align:center;cursor:pointer;transition:all .3s;background:#f9fafb}
+.file-upload-zone:hover,.file-upload-zone.dragover{border-color:#C41E3A;background:rgba(196,30,58,.02)}
+.file-upload-zone.has-file{border-color:#22c55e;background:rgba(34,197,94,.05)}
+
+/* Components */
+.terms-box{max-height:280px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#C41E3A #f3f4f6;background:#f9fafb;border:1px solid #e5e7eb}
+.terms-box::-webkit-scrollbar{width:6px}
+.terms-box::-webkit-scrollbar-track{background:#f3f4f6;border-radius:3px}
+.terms-box::-webkit-scrollbar-thumb{background:#C41E3A;border-radius:3px}
+.form-card{background:#ffffff;border:1px solid #e5e7eb;border-radius:16px;padding:2rem;box-shadow:0 4px 15px rgba(0,0,0,0.03)}
+.upi-box{background:#ffffff;border:1px solid #e5e7eb;border-radius:16px;padding:2rem;position:relative;overflow:hidden;box-shadow:0 4px 15px rgba(0,0,0,0.03)}
+.upi-box::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(to right,#5F259F,#C41E3A,#D4A843)}
+.qr-frame{background:#fff;padding:12px;border-radius:12px;display:inline-block;border:1px solid #e5e7eb;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
+.copy-btn{background:rgba(196,30,58,.1);border:1px solid rgba(196,30,58,.2);color:#C41E3A;padding:.4rem .8rem;border-radius:6px;cursor:pointer;font-size:.75rem;font-weight:600;transition:all .2s;display:inline-flex;align-items:center;gap:.3rem}
+.copy-btn:hover{background:rgba(196,30,58,.15);border-color:#C41E3A}
+.amount-tag{background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1px solid rgba(34,197,94,.3);padding:.6rem 1.5rem;border-radius:10px;display:inline-flex;align-items:center;gap:.5rem}
+.gpay-icon{width:28px;height:28px;background:linear-gradient(135deg,#4285F4,#34A853,#FBBC05,#EA4335);border-radius:6px;display:flex;align-items:center;justify-content:center}
+.status-bar{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);border-radius:10px;padding:.6rem 1rem;display:flex;align-items:center;gap:.5rem;font-size:.8rem;color:#166534;font-weight:500;}
+.status-bar.offline{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.2);color:#991b1b}
+.progress-bar{height:4px;background:#e5e7eb;border-radius:4px;overflow:hidden;margin-top:.5rem}
+.progress-fill{height:100%;background:linear-gradient(to right,#C41E3A,#D4A843);border-radius:4px;transition:width .4s ease;width:0%}
+
+/* Overrides for utility classes forced to dark mode */
+.bg-dojo-black\/60, .bg-dojo-black\/50, .bg-dojo-black\/30 { background-color: #f3f4f6 !important; }
+.border-dojo-border\/50, .border-dojo-border\/30 { border-color: #d1d5db !important; }
+code.text-dojo-white { color: #111827 !important; font-weight: 700 !important; }
+.bg-amber-500\/5 { background-color: #fffbeb !important; border-color: #fde68a !important; }
+.text-amber-300 { color: #b45309 !important; }
+.text-amber-400 { color: #d97706 !important; }
+.text-dojo-lightGray { color: #4b5563 !important; }
+.text-dojo-gray\/50 { color: #6b7280 !important; }
+#successModal > div:nth-child(2) { background: #ffffff !important; border-color: #e5e7eb !important; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04) !important;}
+
+/* Animations */
+@keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.animate-in{animation:fadeInUp .6s cubic-bezier(.16,1,.3,1) forwards}
+.delay-1{animation-delay:.1s;opacity:0}
+.delay-2{animation-delay:.2s;opacity:0}
+.delay-3{animation-delay:.3s;opacity:0}
+.delay-4{animation-delay:.4s;opacity:0}
+.red-dot{width:6px;height:6px;background:#C41E3A;border-radius:50%;display:inline-block;flex-shrink:0}
+@keyframes pulse-red{0%,100%{box-shadow:0 0 0 0 rgba(196,30,58,.3)}50%{box-shadow:0 0 0 6px rgba(196,30,58,0)}}
+.pulse-dot{animation:pulse-red 2s infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.logo-float{animation:float 4s ease-in-out infinite}
+@keyframes spin-slow{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.spin-ring{animation:spin-slow 20s linear infinite}
+.logo-glow{filter:drop-shadow(0 0 15px rgba(196,30,58,.15))}
+
+@media print{body{background:#fff!important}.no-print{display:none!important}.form-card,.upi-box{border:1px solid #ccc;background:#fff!important;box-shadow:none!important}input,select,textarea{border:1px solid #999!important;background:#fff!important;color:#000!important}.form-label{color:#333!important}.kanji-watermark{display:none}.logo-glow{filter:none}}
+</style>
+</head>
+<body class="bg-pattern min-h-screen text-dojo-white">
+
+<div class="kanji-watermark">空手</div>
+
+<div id="toast" class="toast toast-success">
+<span class="iconify" data-icon="mdi:check-circle" data-width="22"></span>
+<span id="toastMsg">Success!</span>
+</div>
+
+<header class="relative z-10 border-b border-dojo-border">
+<div class="max-w-4xl mx-auto px-4 py-8 text-center animate-in">
+<div class="mb-5 flex justify-center relative">
+<div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+<div class="spin-ring w-44 h-44 md:w-52 md:h-52 rounded-full border border-dojo-red/10"></div>
+</div>
+<div class="relative logo-float">
+<img src="https://i.postimg.cc/tYbRXm92/logo-refined-circle.png" alt="The Shotokan Karate Academy" class="h-32 md:h-40 object-contain logo-glow">
+</div>
+</div>
+<h1 class="font-serif text-2xl md:text-4xl font-bold tracking-wide text-dojo-white mb-1">THE SHOTOKAN KARATE ACADEMY</h1>
+<div class="flex items-center justify-center gap-3 mb-2">
+<span class="h-px w-12 bg-gradient-to-r from-transparent to-dojo-red"></span>
+<span class="text-dojo-gold font-serif text-sm md:text-base tracking-[0.25em] font-semibold">ZENSHIN DOJO</span>
+<span class="h-px w-12 bg-gradient-to-l from-transparent to-dojo-red"></span>
+</div>
+<p class="text-dojo-gray text-xs md:text-sm mt-3 flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
+<span class="inline-flex items-center gap-1.5"><span class="iconify text-dojo-red" data-icon="mdi:map-marker" data-width="14"></span>SIRIFORT SPORTS COMPLEX, New Delhi - 110024</span>
+<span class="hidden md:inline text-dojo-border">|</span>
+<span class="inline-flex items-center gap-1.5"><span class="iconify text-dojo-red" data-icon="mdi:phone" data-width="14"></span>0989-183-8186</span>
+<span class="hidden md:inline text-dojo-border">|</span>
+<span class="inline-flex items-center gap-1.5"><span class="iconify text-dojo-red" data-icon="mdi:email" data-width="14"></span>vishalblackbelt@gmail.com</span>
+</p>
+<div class="flex justify-center mt-4 no-print">
+<div class="status-bar offline" id="statusBar">
+<span class="iconify" data-icon="mdi:cloud-off" data-width="16" id="statusIcon"></span>
+<span id="statusText">Checking connection...</span>
+</div>
+</div>
+</div>
+</header>
+
+<main class="relative z-10 max-w-4xl mx-auto px-4 py-10">
+<div class="text-center mb-8 animate-in delay-1">
+<h2 class="text-xl md:text-2xl font-bold tracking-wide uppercase"><span class="text-dojo-red">Admission</span> Form</h2>
+<p class="text-dojo-gray text-sm mt-1">Please fill in all fields accurately</p>
+</div>
+
+<form id="admissionForm" novalidate>
+
+<div class="form-card mb-6 animate-in delay-2">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-8 h-8 rounded-lg bg-dojo-red/10 flex items-center justify-center"><span class="iconify text-dojo-red" data-icon="mdi:account" data-width="18"></span></div>
+<h3 class="text-base font-bold uppercase tracking-wider text-dojo-white">Personal Information</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+<div class="md:col-span-2">
+<label class="form-label">1. Full Name <span class="text-dojo-red">*</span></label>
+<input type="text" id="fullName" name="fullName" placeholder="Enter full name" required>
+</div>
+<div>
+<label class="form-label">Sex <span class="text-dojo-red">*</span></label>
+<div class="radio-custom flex gap-2 mt-1">
+<input type="radio" name="sex" id="male" value="Male" required>
+<label for="male"><span class="iconify" data-icon="mdi:gender-male" data-width="16"></span> Male</label>
+<input type="radio" name="sex" id="female" value="Female">
+<label for="female"><span class="iconify" data-icon="mdi:gender-female" data-width="16"></span> Female</label>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+<div>
+<label class="form-label">2. Father's / Guardian's Name <span class="text-dojo-red">*</span></label>
+<input type="text" id="fatherName" name="fatherName" placeholder="Father's / Guardian's name" required>
+</div>
+<div>
+<label class="form-label">Occupation</label>
+<input type="text" id="fatherOccupation" name="fatherOccupation" placeholder="Occupation">
+</div>
+<div>
+<label class="form-label">Father's Address</label>
+<input type="text" id="fatherAddress" name="fatherAddress" placeholder="Father's address">
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div>
+<label class="form-label">6. Date of Birth <span class="text-dojo-red">*</span></label>
+<input type="date" id="dob" name="dob" required>
+</div>
+<div>
+<label class="form-label">Height (cm)</label>
+<input type="number" id="height" name="height" placeholder="e.g. 170" min="50" max="250">
+</div>
+<div>
+<label class="form-label">Weight (Kg)</label>
+<input type="number" id="weight" name="weight" placeholder="e.g. 65" min="10" max="300">
+</div>
+</div>
+</div>
+
+<div class="form-card mb-6 animate-in delay-3">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-8 h-8 rounded-lg bg-dojo-red/10 flex items-center justify-center"><span class="iconify text-dojo-red" data-icon="mdi:map-marker-radius" data-width="18"></span></div>
+<h3 class="text-base font-bold uppercase tracking-wider text-dojo-white">Contact & Address</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+<div class="md:col-span-2">
+<label class="form-label">4. Residence Address <span class="text-dojo-red">*</span></label>
+<textarea id="resAddress" name="resAddress" rows="2" placeholder="Full residential address" required style="resize:vertical;"></textarea>
+</div>
+<div>
+<label class="form-label">Phone Number <span class="text-dojo-red">*</span></label>
+<input type="tel" id="phone" name="phone" placeholder="Mobile / Landline number" required>
+</div>
+<div>
+<label class="form-label">Email (Optional)</label>
+<input type="email" id="email" name="email" placeholder="Email address">
+</div>
+</div>
+</div>
+
+<div class="form-card mb-6 animate-in delay-4">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-8 h-8 rounded-lg bg-dojo-red/10 flex items-center justify-center"><span class="iconify text-dojo-red" data-icon="mdi:school" data-width="18"></span></div>
+<h3 class="text-base font-bold uppercase tracking-wider text-dojo-white">Education & Occupation</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+<div>
+<label class="form-label">5. Educational Qualification</label>
+<select id="education" name="education">
+<option value="">Select qualification</option>
+<option value="Below 10th">Below 10th</option>
+<option value="10th Pass">10th Pass</option>
+<option value="12th Pass">12th Pass</option>
+<option value="Graduate">Graduate</option>
+<option value="Post Graduate">Post Graduate</option>
+<option value="Other">Other</option>
+</select>
+</div>
+<div>
+<label class="form-label">School / College Name</label>
+<input type="text" id="schoolName" name="schoolName" placeholder="Name of school or college">
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div>
+<label class="form-label">8. Student's Occupation</label>
+<input type="text" id="studentOccupation" name="studentOccupation" placeholder="e.g. Student, Working, etc.">
+</div>
+<div>
+<label class="form-label">7. Physically Fit <span class="text-dojo-red">*</span></label>
+<div class="radio-custom flex gap-2 mt-1">
+<input type="radio" name="physicallyFit" id="fitYes" value="Yes" required>
+<label for="fitYes"><span class="iconify" data-icon="mdi:check-circle" data-width="16"></span> Yes</label>
+<input type="radio" name="physicallyFit" id="fitNo" value="No">
+<label for="fitNo"><span class="iconify" data-icon="mdi:close-circle" data-width="16"></span> No</label>
+</div>
+</div>
+</div>
+</div>
+
+<div class="form-card mb-6 animate-in delay-4">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-8 h-8 rounded-lg bg-dojo-red/10 flex items-center justify-center"><span class="iconify text-dojo-red" data-icon="mdi:file-upload" data-width="18"></span></div>
+<h3 class="text-base font-bold uppercase tracking-wider text-dojo-white">Document Upload</h3>
+</div>
+<div>
+<label class="form-label">3. Passport / Aadhar Photocopy <span class="text-dojo-red">*</span></label>
+<div class="file-upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click();">
+<input type="file" id="fileInput" name="idProof" accept="image/*,.pdf" style="display:none;" required>
+<div id="uploadContent">
+<span class="iconify text-dojo-gray mb-2" data-icon="mdi:cloud-upload" data-width="40"></span>
+<p class="text-dojo-gray text-sm">Click or drag file here to upload</p>
+<p class="text-dojo-gray/70 text-xs mt-1">JPG, PNG, PDF - Max 5MB</p>
+</div>
+<div id="uploadedContent" style="display:none;">
+<span class="iconify text-green-600 mb-2" data-icon="mdi:file-check" data-width="40"></span>
+<p class="text-green-700 text-sm font-medium" id="fileName"></p>
+<p class="text-dojo-gray/70 text-xs mt-1">Click to change file</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="form-card mb-6 animate-in delay-4">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-8 h-8 rounded-lg bg-dojo-red/10 flex items-center justify-center"><span class="iconify text-dojo-red" data-icon="mdi:karate" data-width="18"></span></div>
+<h3 class="text-base font-bold uppercase tracking-wider text-dojo-white">Training Program</h3>
+</div>
+<div>
+<label class="form-label">Select Program <span class="text-dojo-red">*</span></label>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-1">
+<div class="radio-custom"><input type="radio" name="program" id="progKarate" value="Karate" required><label for="progKarate" class="flex-col !gap-1 !py-4 !px-3 w-full text-center"><span class="iconify text-amber-600" data-icon="mdi:karate" data-width="28"></span><span>Karate</span></label></div>
+<div class="radio-custom"><input type="radio" name="program" id="progSelfDefense" value="Self Defense"><label for="progSelfDefense" class="flex-col !gap-1 !py-4 !px-3 w-full text-center"><span class="iconify text-amber-600" data-icon="mdi:shield-account" data-width="28"></span><span>Self Defense</span></label></div>
+<div class="radio-custom"><input type="radio" name="program" id="progCombat" value="Combat Fitness"><label for="progCombat" class="flex-col !gap-1 !py-4 !px-3 w-full text-center"><span class="iconify text-amber-600" data-icon="mdi:dumbbell" data-width="28"></span><span>Combat Fitness</span></label></div>
+<div class="radio-custom"><input type="radio" name="program" id="progKobudo" value="Kobudo"><label for="progKobudo" class="flex-col !gap-1 !py-4 !px-3 w-full text-center"><span class="iconify text-amber-600" data-icon="mdi:sword-cross" data-width="28"></span><span>Kobudo</span></label></div>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
+<div><label class="form-label">Date <span class="text-dojo-red">*</span></label><input type="date" id="appDate" name="appDate" required></div>
+<div><label class="form-label">Place <span class="text-dojo-red">*</span></label><input type="text" id="appPlace" name="appPlace" value="New Delhi" required></div>
+</div>
+</div>
+
+<div class="upi-box mb-6 animate-in delay-4">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center"><span class="iconify text-purple-700" data-icon="mdi:currency-inr" data-width="18"></span></div>
+<h3 class="text-base font-bold uppercase tracking-wider text-dojo-white">Admission Fee Payment</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="text-center">
+<p class="form-label mb-3 text-center">Scan QR Code to Pay</p>
+<div class="qr-frame mx-auto mb-4">
+<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi%3A%2F%2Fpay%3Fpa%3Dvishalblackbelt%40okicici%26pn%3DThe%2520Shotokan%2520Karate%2520Academy%26am%3D2000%26cu%3DINR%26tn%3DAdmission%2520Fee" alt="UPI QR Code" class="w-48 h-48 md:w-52 md:h-52">
+</div>
+<div class="flex items-center justify-center gap-2 mt-2">
+<div class="gpay-icon"><span class="iconify text-white" data-icon="mdi:google" data-width="16"></span></div>
+<span class="text-dojo-gray text-xs">Google Pay / PhonePe / Paytm / BHIM</span>
+</div>
+</div>
+<div>
+<div class="mb-5">
+<p class="form-label">Amount to Pay</p>
+<div class="amount-tag"><span class="text-2xl font-bold text-green-700">&#8377;2,000</span><span class="text-green-700/80 text-xs font-medium">INR</span></div>
+<p class="text-dojo-gray text-xs mt-2">Admission Fee (Non-refundable)</p>
+</div>
+<div class="mb-5">
+<p class="form-label">UPI ID</p>
+<div class="flex items-center gap-2 bg-dojo-black/60 rounded-lg p-3 border border-dojo-border/50">
+<span class="iconify text-purple-600" data-icon="mdi:cellphone" data-width="20"></span>
+<code class="text-dojo-white text-sm font-semibold flex-1 tracking-wide">vishalblackbelt@okicici</code>
+<button type="button" class="copy-btn" onclick="copyUPI()"><span class="iconify" data-icon="mdi:content-copy" data-width="14" id="copyIcon"></span><span id="copyText">Copy</span></button>
+</div>
+</div>
+<div class="mb-5">
+<p class="form-label">Payee Name</p>
+<div class="flex items-center gap-2 bg-dojo-black/60 rounded-lg p-3 border border-dojo-border/50">
+<span class="iconify text-amber-600" data-icon="mdi:account-circle" data-width="20"></span>
+<span class="text-dojo-white text-sm font-medium">The Shotokan Karate Academy</span>
+</div>
+</div>
+<div class="mb-5">
+<label class="form-label">UTR / Transaction Reference No. <span class="text-dojo-red">*</span></label>
+<input type="text" id="utrNumber" name="utrNumber" placeholder="Enter 12-digit UTR number" required>
+</div>
+<div>
+<label class="form-label">Upload Payment Screenshot <span class="text-dojo-red">*</span></label>
+<div class="file-upload-zone" id="paymentUploadZone" onclick="document.getElementById('paymentFileInput').click();" style="padding:1rem;">
+<input type="file" id="paymentFileInput" name="paymentProof" accept="image/*" style="display:none;" required>
+<div id="payUploadContent">
+<span class="iconify text-dojo-gray mb-1" data-icon="mdi:receipt-text" data-width="32"></span>
+<p class="text-dojo-gray text-sm">Upload payment screenshot</p>
+<p class="text-dojo-gray/70 text-xs mt-0.5">JPG, PNG - Max 5MB</p>
+</div>
+<div id="payUploadedContent" style="display:none;">
+<span class="iconify text-green-600 mb-1" data-icon="mdi:check-circle" data-width="32"></span>
+<p class="text-green-700 text-sm font-medium" id="payFileName"></p>
+<p class="text-dojo-gray/70 text-xs mt-0.5">Click to change</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-6 p-3 rounded-lg bg-amber-500/5 border border-amber-500/15">
+<div class="flex gap-2">
+<span class="iconify text-amber-600 mt-0.5 flex-shrink-0" data-icon="mdi:information" data-width="16"></span>
+<div class="text-xs text-dojo-gray leading-relaxed">
+<strong class="text-amber-700">Instructions:</strong> Scan the QR code using any UPI app (Google Pay, PhonePe, Paytm, BHIM) and pay <strong class="text-dojo-white">&#8377;2,000</strong>. After payment, enter the <strong class="text-dojo-white">UTR number</strong> and upload the <strong class="text-dojo-white">screenshot</strong>. Admission will be confirmed after verification.
+</div>
+</div>
+</div>
+</div>
+
+<div class="form-card mb-8 animate-in delay-4">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-8 h-8 rounded-lg bg-dojo-red/10 flex items-center justify-center"><span class="iconify text-dojo-red" data-icon="mdi:gavel" data-width="18"></span></div>
+<h3 class="text-base font-bold uppercase tracking-wider text-dojo-white">Terms & Conditions</h3>
+</div>
+<div class="terms-box rounded-xl p-5 mb-5 border">
+<div class="space-y-4 text-dojo-gray text-sm leading-relaxed">
+<div class="flex gap-3"><span class="red-dot pulse-dot mt-1.5"></span><p><strong class="text-dojo-white">1.</strong> KARATE-DO training is the development of the spirit and character of person and a student of karate should develop patience, tolerance and humility.</p></div>
+<div class="flex gap-3"><span class="red-dot pulse-dot mt-1.5"></span><p><strong class="text-dojo-white">2.</strong> KARATE-DO is an art of self-defense and should not be used indiscriminately, provocation is not an excuse for using karate. It should only be used as a defense against physical attack and even under such circumstances it should be used with restraint and without malice.</p></div>
+<div class="flex gap-3"><span class="red-dot pulse-dot mt-1.5"></span><p><strong class="text-dojo-white">3.</strong> KARATE-DO is not for show and should not be trained with the intention of showing off, it should only be exhibited for educational and charitable purposes only.</p></div>
+<div class="flex gap-3"><span class="red-dot pulse-dot mt-1.5"></span><p><strong class="text-dojo-white">4.</strong> Any kind of misbehavior in the class or outside the class will result in termination from training without any notice. KARATE-DO students should develop good manners and respect for the elders and senior instructors. This is applicable for parents as well.</p></div>
+<div class="flex gap-3"><span class="red-dot pulse-dot mt-1.5"></span><p><strong class="text-dojo-white">5.</strong> KARATE students are not permitted to teach other students or conduct classes.</p></div>
+<div class="flex gap-3"><span class="red-dot pulse-dot mt-1.5"></span><p><strong class="text-dojo-white">6.</strong> While all possible precautions are taken, T.S.K.A., the owners, stadium and instructors shall not be responsible for any injury, which may occur before, during or after the training of the trainees who joins the training at their own risk.</p></div>
+<div class="flex gap-3"><span class="red-dot pulse-dot mt-1.5"></span><p><strong class="text-dojo-white">7.</strong> People found having criminal records or of bad character will not be permitted to continue training in the karate center.</p></div>
+<div class="flex gap-3"><span class="red-dot pulse-dot mt-1.5"></span><p><strong class="text-dojo-white">8.</strong> People who use karate to bully or for brawls in public will be expelled from the training center and from the T.S.K.A.</p></div>
+<div class="flex gap-3"><span class="red-dot pulse-dot mt-1.5"></span><p><strong class="text-dojo-white">9.</strong> A trainee who is absent from training is still liable to pay fees, exception only, when he is not well during that period of days or months.</p></div>
+</div>
+</div>
+<div class="mb-5 p-4 rounded-xl bg-dojo-black/30 border border-dojo-border/30">
+<label class="checkbox-wrap">
+<input type="checkbox" id="acceptTerms" required>
+<div class="checkbox-box"><span class="iconify check-icon" data-icon="mdi:check" data-width="14"></span></div>
+<span class="text-sm text-dojo-lightGray">I, <strong class="text-dojo-white" id="applicantNameDisplay">__________</strong>, have fully read and understood and accept the above-mentioned terms and conditions.</span>
+</label>
+</div>
+<div class="p-4 rounded-xl bg-dojo-black/30 border border-dojo-border/30 mb-4">
+<p class="form-label mb-3 text-amber-600"><span class="iconify inline-block mr-1" data-icon="mdi:account-child" data-width="14"></span>Guardian Details (In case of minor)</p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div><label class="form-label">Guardian Name</label><input type="text" id="guardianName" name="guardianName" placeholder="Guardian's full name"></div>
+<div><label class="form-label">Guardian Signature</label><input type="text" id="guardianSigText" name="guardianSigText" placeholder="Type full name as digital signature"></div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+<div><label class="form-label">Date</label><input type="date" id="guardianDate" name="guardianDate"></div>
+<div><label class="form-label">Place</label><input type="text" id="guardianPlace" name="guardianPlace" placeholder="Place"></div>
+</div>
+</div>
+<div class="p-4 rounded-xl border border-dojo-red/20 bg-red-50">
+<div class="flex items-center gap-3">
+<span class="iconify text-dojo-red" data-icon="mdi:stamp" data-width="24"></span>
+<div>
+<p class="text-sm font-semibold text-dojo-white">Approval of Technical Director / Secretary</p>
+<p class="text-xs text-dojo-gray mt-0.5">For training authorization: <span class="text-amber-600 font-bold" id="approvalStatus">PENDING</span></p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="text-center animate-in delay-4 no-print">
+<button type="submit" class="submit-btn" id="submitBtn">
+<span class="iconify inline-block mr-2 -mt-0.5" data-icon="mdi:send" data-width="20"></span>
+Submit Application
+</button>
+<div class="progress-bar mt-4 mx-auto" style="max-width:300px;display:none;" id="progressBar">
+<div class="progress-fill" id="progressFill"></div>
+</div>
+<p class="text-dojo-gray text-xs mt-4">By submitting, you confirm all information provided is accurate and truthful.</p>
+</div>
+
+</form>
+
+<div id="successModal" class="fixed inset-0 z-50 flex items-center justify-center p-4" style="display:none;">
+<div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeModal()"></div>
+<div class="relative bg-white border border-gray-200 rounded-2xl p-8 max-w-md w-full text-center" style="animation:fadeInUp .5s ease forwards;">
+<div class="w-20 h-20 rounded-full bg-green-50 border-2 border-green-200 flex items-center justify-center mx-auto mb-5">
+<span class="iconify text-green-600" data-icon="mdi:check-bold" data-width="40"></span>
+</div>
+<h3 class="text-xl font-bold text-gray-900 mb-2">Application Submitted!</h3>
+<p class="text-gray-600 text-sm mb-2">Your admission form has been saved to our records.</p>
+<p class="text-gray-600 text-sm mb-6">Payment of <strong class="text-green-700">&#8377;2,000</strong> will be verified shortly. We will contact you after confirmation.</p>
+<div class="bg-gray-50 rounded-lg p-3 mb-6 border border-gray-100">
+<p class="text-xs text-gray-500">Application Reference</p>
+<p class="text-amber-600 font-bold text-lg tracking-widest" id="refNumber">TSKA-2025-0001</p>
+</div>
+<button onclick="closeModal()" class="submit-btn w-full text-center justify-center">Close</button>
+</div>
+</div>
+
+</main>
+
+<footer class="relative z-10 border-t border-dojo-border py-8 text-center no-print">
+<div class="flex justify-center mb-3"><img src="https://i.postimg.cc/tYbRXm92/logo-refined-circle.png" alt="TSKA" class="h-10 opacity-30"></div>
+<p class="text-dojo-gray text-xs">&copy; 2025 The Shotokan Karate Academy - Zenshin Dojo. All rights reserved.</p>
+</footer>
+
+<script>
+const SCRIPT_URL='https://script.google.com/macros/s/AKfycbyaUJWg9mrPCpjzNjxSo_kRnrk5YUrOEUb8JoBeC4XbeLk5kM0U4UWFFXtgt4JTX91W/exec';
+
+function checkConnection(){
+const bar=document.getElementById('statusBar'),icon=document.getElementById('statusIcon'),text=document.getElementById('statusText');
+fetch(SCRIPT_URL,{method:'GET'}).then(r=>r.json()).then(()=>{bar.className='status-bar';icon.setAttribute('data-icon','mdi:cloud-check');text.textContent='Connected to Google Sheets ✓';}).catch(()=>{bar.className='status-bar offline';icon.setAttribute('data-icon','mdi:cloud-off');text.textContent='Could not reach Google Sheets';});
+}
+checkConnection();
+
+document.getElementById('appDate').valueAsDate=new Date();
+
+document.getElementById('fullName').addEventListener('input',function(){document.getElementById('applicantNameDisplay').textContent=this.value.trim()||'__________';});
+
+function copyUPI(){navigator.clipboard.writeText('vishalblackbelt@okicici').then(()=>{document.getElementById('copyText').textContent='Copied!';document.getElementById('copyIcon').setAttribute('data-icon','mdi:check');showToast('UPI ID copied to clipboard!','success');setTimeout(()=>{document.getElementById('copyText').textContent='Copy';document.getElementById('copyIcon').setAttribute('data-icon','mdi:content-copy');},2000);}).catch(()=>{const ta=document.createElement('textarea');ta.value='vishalblackbelt@okicici';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast('UPI ID copied!','success');});}
+
+function fileToBase64(file){return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result.split(',')[1]);reader.onerror=reject;reader.readAsDataURL(file);});}
+
+const uploadZone=document.getElementById('uploadZone'),fileInput=document.getElementById('fileInput');
+uploadZone.addEventListener('dragover',e=>{e.preventDefault();uploadZone.classList.add('dragover');});
+uploadZone.addEventListener('dragleave',()=>uploadZone.classList.remove('dragover'));
+uploadZone.addEventListener('drop',e=>{e.preventDefault();uploadZone.classList.remove('dragover');if(e.dataTransfer.files.length){fileInput.files=e.dataTransfer.files;handleFileSelect(e.dataTransfer.files[0]);}});
+fileInput.addEventListener('change',function(){if(this.files.length)handleFileSelect(this.files[0]);});
+function handleFileSelect(file){if(file.size>5*1024*1024){showToast('File size must be under 5MB','error');return;}document.getElementById('uploadContent').style.display='none';document.getElementById('uploadedContent').style.display='block';document.getElementById('fileName').textContent=file.name;uploadZone.classList.add('has-file');}
+
+const payUploadZone=document.getElementById('paymentUploadZone'),payFileInput=document.getElementById('paymentFileInput');
+payUploadZone.addEventListener('dragover',e=>{e.preventDefault();payUploadZone.classList.add('dragover');});
+payUploadZone.addEventListener('dragleave',()=>payUploadZone.classList.remove('dragover'));
+payUploadZone.addEventListener('drop',e=>{e.preventDefault();payUploadZone.classList.remove('dragover');if(e.dataTransfer.files.length){payFileInput.files=e.dataTransfer.files;handlePayFile(e.dataTransfer.files[0]);}});
+payFileInput.addEventListener('change',function(){if(this.files.length)handlePayFile(this.files[0]);});
+function handlePayFile(file){if(file.size>5*1024*1024){showToast('Screenshot must be under 5MB','error');return;}document.getElementById('payUploadContent').style.display='none';document.getElementById('payUploadedContent').style.display='block';document.getElementById('payFileName').textContent=file.name;payUploadZone.classList.add('has-file');}
+
+document.getElementById('admissionForm').addEventListener('submit',async function(e){
+e.preventDefault();
+const required=[{id:'fullName',label:'Full Name'},{id:'fatherName',label:"Father's Name"},{id:'dob',label:'Date of Birth'},{id:'resAddress',label:'Residence Address'},{id:'phone',label:'Phone Number'},{id:'appDate',label:'Date'},{id:'appPlace',label:'Place'},{id:'utrNumber',label:'UTR / Transaction Reference Number'}];
+for(let field of required){const el=document.getElementById(field.id);if(!el.value.trim()){showToast('Please enter '+field.label,'error');el.focus();el.style.borderColor='#ef4444';setTimeout(()=>el.style.borderColor='',2000);return;}}
+if(!document.querySelector('input[name="sex"]:checked')){showToast('Please select Sex','error');return;}
+if(!document.querySelector('input[name="physicallyFit"]:checked')){showToast('Please confirm physical fitness','error');return;}
+if(!document.querySelector('input[name="program"]:checked')){showToast('Please select a training program','error');return;}
+if(!fileInput.files.length){showToast('Please upload Passport / Aadhar copy','error');return;}
+if(!payFileInput.files.length){showToast('Please upload payment screenshot','error');return;}
+if(!document.getElementById('acceptTerms').checked){showToast('Please accept the Terms & Conditions','error');return;}
+
+const btn=document.getElementById('submitBtn'),progressBar=document.getElementById('progressBar'),progressFill=document.getElementById('progressFill');
+btn.disabled=true;btn.innerHTML='<span class="iconify inline-block animate-spin mr-2" data-icon="mdi:loading" data-width="20"></span> Processing...';progressBar.style.display='block';
+
+try{
+progressFill.style.width='20%';
+const idProofBase64=await fileToBase64(fileInput.files[0]);
+progressFill.style.width='40%';
+const payProofBase64=await fileToBase64(payFileInput.files[0]);
+progressFill.style.width='60%';
+
+const formData={appDate:document.getElementById('appDate').value,fullName:document.getElementById('fullName').value.trim(),sex:document.querySelector('input[name="sex"]:checked').value,fatherName:document.getElementById('fatherName').value.trim(),fatherOccupation:document.getElementById('fatherOccupation').value.trim(),fatherAddress:document.getElementById('fatherAddress').value.trim(),dob:document.getElementById('dob').value,height:document.getElementById('height').value,weight:document.getElementById('weight').value,resAddress:document.getElementById('resAddress').value.trim(),phone:document.getElementById('phone').value.trim(),email:document.getElementById('email').value.trim(),education:document.getElementById('education').value,schoolName:document.getElementById('schoolName').value.trim(),studentOccupation:document.getElementById('studentOccupation').value.trim(),physicallyFit:document.querySelector('input[name="physicallyFit"]:checked').value,program:document.querySelector('input[name="program"]:checked').value,utrNumber:document.getElementById('utrNumber').value.trim(),idProof:idProofBase64,paymentProof:payProofBase64,guardianName:document.getElementById('guardianName').value.trim(),guardianSigText:document.getElementById('guardianSigText').value.trim(),guardianDate:document.getElementById('guardianDate').value,guardianPlace:document.getElementById('guardianPlace').value.trim()};
+
+progressFill.style.width='80%';
+await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(formData)});
+progressFill.style.width='100%';
+
+setTimeout(()=>{
+const ref='TSKA-2025-'+String(Math.floor(Math.random()*9999)+1).padStart(4,'0');
+document.getElementById('refNumber').textContent=ref;
+document.getElementById('approvalStatus').textContent='PAYMENT VERIFICATION';
+document.getElementById('approvalStatus').classList.remove('text-amber-600');
+document.getElementById('approvalStatus').classList.add('text-amber-600');
+document.getElementById('successModal').style.display='flex';
+document.getElementById('admissionForm').reset();
+document.getElementById('appDate').valueAsDate=new Date();
+document.getElementById('appPlace').value='New Delhi';
+document.getElementById('applicantNameDisplay').textContent='__________';
+document.getElementById('uploadContent').style.display='block';
+document.getElementById('uploadedContent').style.display='none';
+uploadZone.classList.remove('has-file');
+document.getElementById('payUploadContent').style.display='block';
+document.getElementById('payUploadedContent').style.display='none';
+payUploadZone.classList.remove('has-file');
+showToast('Application saved to Google Sheets!','success');
+progressBar.style.display='none';progressFill.style.width='0%';
+},500);
+}catch(error){showToast('Error: '+error.message,'error');progressBar.style.display='none';progressFill.style.width='0%';}
+finally{btn.disabled=false;btn.innerHTML='<span class="iconify inline-block mr-2 -mt-0.5" data-icon="mdi:send" data-width="20"></span> Submit Application';}
+});
+
+function closeModal(){document.getElementById('successModal').style.display='none';}
+
+function showToast(message,type){const toast=document.getElementById('toast'),msg=document.getElementById('toastMsg');toast.className='toast toast-'+type;msg.textContent=message;toast.querySelector('.iconify').setAttribute('data-icon',type==='success'?'mdi:check-circle':'mdi:alert-circle');setTimeout(()=>toast.classList.add('show'),10);setTimeout(()=>toast.classList.remove('show'),3500);}
+</script>
+
+</body>
+</html>
